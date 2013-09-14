@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#navlist_module-ftp").addClass("active");
+        });
+    </script>
+
+        <form action="{% url 'module-ftp_edit' %}" method="post" class="form-horizontal" role="form">
+        {% for config in config_options %}
+            <div class="form-group">
+                <label class="col-lg-3 control-label">{{ config.name }}</label>
+                <div class="col-lg-9">
+                    <input type="text" class="form-control" id="input_{{ config.name }}" placeholder="{{ config.value }}" value="{{ config.value }}">
+                </div>
+            </div>
+        {% empty %}
+            O_o
+        {% endfor %}
+
+            <div class="form-group">
+                <div class="col-lg-offset-3 col-lg-9">
+                    <button type="submit" class="btn btn-default">Save</button>
+                </div>
+            </div>
+        </form>
+{% endblock %}

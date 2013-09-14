@@ -9,4 +9,19 @@
     </script>
 
 
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">{% blocktrans %}Current settings{% endblocktrans %}</h3>
+        </div>
+        <div class="panel-body">
+            <p>
+                <a class="btn btn-default" href="{% url 'module-ftp_edit' %}">Edit</a>
+            </p>
+            {% for config in config_options %}
+                <code>{{ config.name }}: {{ config.value }}</code><br>
+            {% empty %}
+                O_o
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}
