@@ -1,6 +1,5 @@
 from ConfigParser import RawConfigParser
 from StringIO import StringIO
-from django.utils.decorators import available_attrs
 
 __author__ = 'delin'
 

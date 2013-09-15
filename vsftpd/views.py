@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 from django.utils.translation import ugettext as _
 from MyAdmin.functions import prepare_data
-from modules.ftp.parser import vsFTPdParser
+from modules.vsftpd.parser import vsFTPdParser
 
 
 @login_required
