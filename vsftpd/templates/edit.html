@@ -8,7 +8,7 @@
         });
     </script>
 
-        <form action="{% url 'module-ftp_edit' %}" method="post" class="form-horizontal" role="form">
+        <form action="{% url 'module-vsftpd_edit' %}" method="post" class="form-horizontal" role="form">
         {% for config in config_options %}
             <div class="form-group">
                 <label class="col-lg-3 control-label">{{ config.name }}</label>
