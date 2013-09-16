@@ -8,20 +8,67 @@
         });
     </script>
 
-        <form action="{% url 'module-vsftpd_edit' %}" method="post" class="form-horizontal" role="form">
-        {% for config in config_options %}
+        <form action="{% url 'module-vsftpd_edit' %}" method="post" class="form-horizontal" role="form">{% csrf_token %}
             <div class="form-group">
-                <label class="col-lg-3 control-label">{{ config.name }}</label>
-                <div class="col-lg-9">
-                    <input type="text" class="form-control" id="input_{{ config.name }}" placeholder="{{ config.value }}" value="{{ config.value }}">
+                <div class="col-lg-offset-4 col-lg-8">
+                    <div class="checkbox">
+                        <label>
+                            <input name="anonymous_enable" id="anonymous_enable" type="checkbox" {% ifequal configs.anonymous_enable.value "YES" %}checked{% endifequal %}> Allow anonymous FTP<br>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-lg-offset-4 col-lg-8">
+                    <div class="checkbox">
+                        <label>
+                            <input name="anon_upload_enable" id="anon_upload_enable" type="checkbox" {% ifequal configs.anon_upload_enable.value "YES" %}checked{% endifequal %}> Allow anonymous FTP user to upload files<br>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-lg-offset-4 col-lg-8">
+                    <div class="checkbox">
+                        <label>
+                            <input name="anon_mkdir_write_enable" id="anon_mkdir_write_enable" type="checkbox" {% ifequal configs.anon_mkdir_write_enable.value "YES" %}checked{% endifequal %}> Anonymous FTP user to be able to create new directories<br>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-lg-offset-4 col-lg-8">
+                    <div class="checkbox">
+                        <label>
+                            <input name="local_enable" id="local_enable" type="checkbox" {% ifequal configs.local_enable.value "YES" %}checked{% endifequal %}> Allow local users<br>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-lg-offset-4 col-lg-8">
+                    <div class="checkbox">
+                        <label>
+                            <input name="write_enable" id="write_enable" type="checkbox" {% ifequal configs.write_enable.value "YES" %}checked{% endifequal %}> Enable any form of FTP write command<br>
+                    </div>
+                </div>
+                <div class="col-lg-offset-4 col-lg-8">
+                    <div class="checkbox">
+                        <label>
+                            <input name="listen" id="listen" type="checkbox" {% ifequal configs.listen.value "YES" %}checked{% endifequal %}> Runs in standalone mode and listens on IPv4 sockets<br>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-lg-offset-4 col-lg-8">
+                    <div class="checkbox">
+                        <label>
+                            <input name="listen_ipv6" id="listen_ipv6" type="checkbox" {% ifequal  configs.listen_ipv6.value "YES" %}checked{% endifequal %}> Runs in standalone mode and listens on IPv6 sockets<br>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="">
+                    <label for="local_umask" class="col-lg-4 control-label">Default umask for local users</label>
+                    <div class="col-lg-2">
+                        <input name="local_umask" id="local_umask" type="text" class="form-control" placeholder="{{ configs.local_umask.value|default_if_none:configs.local_umask.default }}"
+                               value="{{ configs.local_umask.value|default_if_none:configs.local_umask.default }}">
+                    </div>
                 </div>
             </div>
-        {% empty %}
-            O_o
-        {% endfor %}
-
             <div class="form-group">
-                <div class="col-lg-offset-3 col-lg-9">
+                <div class="col-lg-offset-4 col-lg-8">
                     <button type="submit" class="btn btn-default">Save</button>
                 </div>
             </div>
