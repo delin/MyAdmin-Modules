@@ -1,12 +1,17 @@
-from ConfigParser import RawConfigParser
-from StringIO import StringIO
+import re
 
 __author__ = 'delin'
+
+from ConfigParser import RawConfigParser
+from StringIO import StringIO
+from MyAdmin.functions import get_system_users
 
 
 class vsFTPdParser(object):
     section = "root"
     default_config = "/etc/vsftpd.conf"
+    ftp_users_file = "/etc/ftp_users.conf"
+    vsftpd_version = 3.0
 
     default_values = {
         "anonymous_enable": "YES",
@@ -54,3 +59,22 @@ class vsFTPdParser(object):
 
     def options(self):
         return self.config.options(self.section)
+
+    def get_ftp_users(self):
+        system_users = get_system_users()
+
+        try:
+            ftp_users_fd = open(self.ftp_users_file, "r")
+        except:
+            raise
+
+        no_ftp_users = []
+        for user in ftp_users_fd:
+            no_ftp_users.append(re.sub("^\s+|\n|\r|\s+$", '', user))
+
+        ftp_users = []
+        for user in system_users:
+            if user['name'] not in no_ftp_users and user['uid'] >= 1000:
+                ftp_users.append(user)
+
+        return ftp_users

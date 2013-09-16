@@ -8,20 +8,30 @@
         });
     </script>
 
+    {% include "includes/users_table.html" %}
 
     <div class="panel panel-default">
         <div class="panel-heading">
             <h3 class="panel-title">{% blocktrans %}Current settings{% endblocktrans %}</h3>
         </div>
         <div class="panel-body">
-            <p>
-                <a class="btn btn-default" href="{% url 'module-vsftpd_edit' %}">Edit</a>
-            </p>
-            {% for config in config_options %}
-                <code>{{ config.name }}: {{ config.value }}</code><br>
-            {% empty %}
-                O_o
-            {% endfor %}
+            <a class="btn btn-default" href="{% url 'module-vsftpd_edit' %}">Edit</a>
         </div>
+        <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th>{% trans "Name" %}</th>
+                    <th>{% trans "Value" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for config in config_options %}
+                <tr>
+                    <td>{{ config.name }}</td>
+                    <td>{{ config.value }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 {% endblock %}
