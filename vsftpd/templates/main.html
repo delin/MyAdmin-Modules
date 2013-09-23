@@ -8,17 +8,46 @@
         });
     </script>
 
-    {% include "includes/users_table.html" %}
+    {% url 'module-vsftpd_main' as this_url %}
+    {% include "includes/service_actions.html" with name="vsftpd" prev_page=this_url status=service_status %}
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">{% blocktrans %}FTP Users{% endblocktrans %}</h3>
+        </div>
+        <div class="panel-body">
+            <a class="btn btn-default" href="{% url 'module-vsftpd_user_add' %}">{% blocktrans %}Add User{% endblocktrans %}</a>
+        </div>
+        <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>{% trans "Username" %}</th>
+                    <th>{% trans "Groups" %}</th>
+                    <th>{% blocktrans %}Home dir{% endblocktrans %}</th>
+                    <th>{% trans "Shell" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users reversed %}
+                <tr>
+                    <td>{{ forloop.revcounter }}</td>
+                    <td><a href="{% url 'user_view' user.uid %}">{{ user.name }}</a></td>
+                    <td>{% for group in user.groups %}{{ group.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+                    <td>{{ user.home_dir }}</td>
+                    <td>{{ user.shell }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
     <div class="panel panel-default">
         <div class="panel-heading">
             <h3 class="panel-title">{% blocktrans %}Current settings{% endblocktrans %}</h3>
         </div>
         <div class="panel-body">
-            <p><a class="btn btn-default" href="{% url 'module-vsftpd_edit' %}">Edit</a></p>
-            <form action="{% url 'module-vsftpd_main' %}" method="post">{% csrf_token %}
-                <button type="submit" class="btn btn-default" name="btn-reload">Reload service</button>
-            </form>
+            <a class="btn btn-default" href="{% url 'module-vsftpd_edit' %}">Edit</a>
         </div>
         <table class="table table-condensed">
             <thead>

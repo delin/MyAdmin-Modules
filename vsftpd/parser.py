@@ -1,15 +1,17 @@
+from system_tools.users import SystemUsers
+
 __author__ = 'delin'
 
 import re
 from ConfigParser import RawConfigParser
 from StringIO import StringIO
-from MyAdmin.functions import get_system_users, system_cmd, replace_in_file
+from MyAdmin.functions import system_cmd, replace_in_file
 
 
 class vsFTPdParser(object):
     section = "root"
     default_config = "/etc/vsftpd.conf"
-    ftp_users_file = "/etc/ftp_users.conf"
+    ftp_users_file = "/etc/ftpusers"
     vsftpd_version = 3.0
     fd = None
     fp = None
@@ -162,7 +164,8 @@ class vsFTPdParser(object):
         return self.config.options(self.section)
 
     def get_ftp_users(self):
-        system_users = get_system_users()
+        user_management = SystemUsers()
+        system_users = user_management.get_users()
 
         try:
             ftp_users_fd = open(self.ftp_users_file, "r")

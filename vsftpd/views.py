@@ -4,7 +4,9 @@ from django.core.context_processors import csrf
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from django.utils.translation import ugettext as _
-from MyAdmin.functions import prepare_data, service_reload
+from MyAdmin.functions import prepare_data
+from system_tools.services import SystemServices
+from modules.vsftpd import myadmin_module
 from modules.vsftpd.parser import vsFTPdParser
 
 
@@ -22,7 +24,9 @@ def main(request):
 
     if 'POST' in request.method:
         if 'btn-reload' in request.POST:
-            if service_reload("vsftpd", request):
+            system_services = SystemServices()
+
+            if system_services.reload("vsftpd"):
                 messages.success(request,  _("Service reloaded"))
             else:
                 messages.error(request,  _("Service reloaded error"))
@@ -37,11 +41,16 @@ def main(request):
             "default": config.default_values.get(option),
         })
 
+    system_services = SystemServices()
+    service_status = system_services.status('vsftpd')
+
     return render(request, "main.html", {
+        'loaded_module': myadmin_module,
         'page_title': page_title,
         'data': prepare_data(request),
         'config_options': config_options,
         'users': users,
+        'service_status': service_status,
     })
 
 
@@ -98,7 +107,23 @@ def edit(request):
         return redirect('module-vsftpd_main')
 
     return render(request, "edit.html", {
+        'loaded_module': myadmin_module,
         'page_title': page_title,
         'data': prepare_data(request),
         'configs': config.get_configs_array(),
+    })
+
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def user_add(request):
+    page_title = _("Create new FTP user")
+
+    c = {}
+    c.update(csrf(request))
+
+    return render(request, "user_add.html", {
+        'loaded_module': myadmin_module,
+        'page_title': page_title,
+        'data': prepare_data(request),
     })
