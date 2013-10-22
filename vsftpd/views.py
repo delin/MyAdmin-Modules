@@ -143,23 +143,31 @@ def user_add(request):
 
     user_management = SystemUsers()
     if request.method == "POST":
-        exitcode = user_management.create_user(
+        exit_code, exit_message = user_management.create_user(
             login=request.POST.get("login"),
             password=request.POST.get("password"),
             home_dir=request.POST.get("home_dir"),
             in_groups=request.POST.getlist('select-groups'),
             create_group=request.POST.get("create_user_group"),
-            # shell=shell,
+            shell='/bin/sh',
             comment=request.POST.get("comment"),
             is_system_user=False,
         )
 
-        if 'create_and_next' in request.POST:
+        if exit_code == 0:
+            messages.success(request, exit_message)
+
+            if 'create_and_next' in request.POST:
+                return redirect('module-vsftpd_user_add')
+        else:
+            messages.error(request, exit_message)
             return redirect('module-vsftpd_user_add')
+
         return redirect('module-vsftpd_main')
 
     return render(request, "user_add.html", {
         'loaded_module': myadmin_module,
         'page_title': page_title,
         'data': prepare_data(request),
+        'groups': user_management.get_groups()
     })
