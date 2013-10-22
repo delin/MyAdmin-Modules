@@ -28,7 +28,7 @@
         <div class="form-group" id="group-home">
             <label for="input-home" class="col-lg-2 control-label">{% trans "Home dir" %}</label>
             <div class="col-lg-10">
-                <input name="home_dir" type="text" class="form-control" id="input-home" placeholder="{% trans "Home dir" %}" value="{{ default_home }}">
+                <input name="home_dir" type="text" class="form-control" id="input-home" placeholder="{% trans "Home dir" %}" value="{{ default_home }}" required>
                 <span class="help-block">{% blocktrans %}User FTP directory.{% endblocktrans %}</span>
             </div>
         </div>

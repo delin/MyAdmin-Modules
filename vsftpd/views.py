@@ -8,6 +8,7 @@ from MyAdmin.functions import prepare_data
 from system_tools.services import SystemServices
 from modules.vsftpd import myadmin_module
 from modules.vsftpd.parser import vsFTPdParser
+from system_tools.users import SystemUsers
 
 
 @login_required
@@ -90,6 +91,24 @@ def edit(request):
         else:
             config.set('write_enable', 'NO')
 
+        if request.POST.get('userlist_enable'):
+            config.set('userlist_enable', 'YES')
+        else:
+            config.set('userlist_enable', 'NO')
+
+        if request.POST.get('userlist_deny'):
+            config.set('userlist_deny', 'YES')
+        else:
+            config.set('userlist_deny', 'NO')
+
+        if request.POST.get('check_shell'):
+            config.set('check_shell', 'YES')
+        else:
+            config.set('check_shell', 'NO')
+
+        if request.POST.get('userlist_file'):
+            config.set('userlist_file', request.POST.get('userlist_file'))
+
         if request.POST.get('listen'):
             config.set('listen', 'YES')
         else:
@@ -121,6 +140,23 @@ def user_add(request):
 
     c = {}
     c.update(csrf(request))
+
+    user_management = SystemUsers()
+    if request.method == "POST":
+        exitcode = user_management.create_user(
+            login=request.POST.get("login"),
+            password=request.POST.get("password"),
+            home_dir=request.POST.get("home_dir"),
+            in_groups=request.POST.getlist('select-groups'),
+            create_group=request.POST.get("create_user_group"),
+            # shell=shell,
+            comment=request.POST.get("comment"),
+            is_system_user=False,
+        )
+
+        if 'create_and_next' in request.POST:
+            return redirect('module-vsftpd_user_add')
+        return redirect('module-vsftpd_main')
 
     return render(request, "user_add.html", {
         'loaded_module': myadmin_module,

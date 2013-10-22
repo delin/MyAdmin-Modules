@@ -11,7 +11,6 @@ from MyAdmin.functions import system_cmd, replace_in_file
 class vsFTPdParser(object):
     section = "root"
     default_config = "/etc/vsftpd.conf"
-    ftp_users_file = "/etc/ftpusers"
     vsftpd_version = 3.0
     fd = None
     fp = None
@@ -130,6 +129,22 @@ class vsFTPdParser(object):
             "default": "YES",
             "re": "^YES$|^NO$",
         },
+        "check_shell": {
+            "default": "YES",
+            "re": "^YES$|^NO$",
+        },
+        "userlist_enable": {
+            "default": "NO",
+            "re": "^YES$|^NO$",
+        },
+        "userlist_deny": {
+            "default": "YES",
+            "re": "^YES$|^NO$",
+        },
+        "userlist_file": {
+            "default": "/etc/ftpusers",
+            "re": "^[\W+\/\\\]{1,}",
+        },
     }
 
     def __init__(self, conf_path=default_config):
@@ -167,20 +182,64 @@ class vsFTPdParser(object):
         user_management = SystemUsers()
         system_users = user_management.get_users()
 
-        try:
-            ftp_users_fd = open(self.ftp_users_file, "r")
-        except:
-            raise
+        if self.get('userlist_enable') == 'YES':
+            userlist_enable = True
+        else:
+            userlist_enable = False
 
-        no_ftp_users = []
-        for user in ftp_users_fd:
-            no_ftp_users.append(re.sub("^\s+|\n|\r|\s+$", '', user))
+        if self.get('userlist_deny') == 'YES':
+            userlist_deny = True
+        else:
+            userlist_deny = False
+
+        if self.get('check_shell') == 'YES':
+            check_shell = True
+        else:
+            check_shell = False
+
+        ftpusers_file = self.get('userlist_file')
+        ftpusers_access_list = []
+        ftpusers_deny_list = []
+
+        if userlist_enable:
+            try:
+                ftpusers_list_fd = open(ftpusers_file, 'r')
+
+                for user in ftpusers_list_fd:
+                    if not re.match('(^#|^$)', user):
+                        cur_user = re.sub("^\s+|\n|\r|\s+$", '', user)
+                        if userlist_deny:
+                            ftpusers_deny_list.append(cur_user)
+                        else:
+                            ftpusers_access_list.append(cur_user)
+            except BaseException as e:
+                print "[debug]: " + str(e)
+
+        allowed_shells = []
+        try:
+            allowed_shells_fd = open('/etc/shells', 'r')
+            for shell in allowed_shells_fd:
+                if not re.match('(^#|^$)', shell):
+                    cur_shell = re.sub("^\s+|\n|\r|\s+$", '', shell)
+                    allowed_shells.append(cur_shell)
+        except BaseException as e:
+            print "[debug]: " + str(e)
 
         ftp_users = []
         for user in system_users:
-            if user['name'] not in no_ftp_users and user['uid'] >= 1000:
-                ftp_users.append(user)
+            if check_shell:
+                if user['shell'] not in allowed_shells:
+                    continue
 
+            if userlist_deny:
+                if user['name'] in ftpusers_deny_list:
+                    continue
+            else:
+                if user['name'] not in ftpusers_access_list:
+                    continue
+
+            if user['uid'] >= 1000:
+                ftp_users.append(user)
         return ftp_users
 
     def get_configs_array(self):

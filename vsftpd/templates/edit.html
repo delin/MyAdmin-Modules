@@ -34,6 +34,13 @@
                 <div class="col-lg-offset-4 col-lg-8">
                     <div class="checkbox">
                         <label>
+                            <input name="check_shell" id="check_shell" type="checkbox" {% ifequal configs.check_shell.value "YES" %}checked{% endifequal %}> Check /etc/shells for a valid user shell for local logins<br>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-lg-offset-4 col-lg-8">
+                    <div class="checkbox">
+                        <label>
                             <input name="local_enable" id="local_enable" type="checkbox" {% ifequal configs.local_enable.value "YES" %}checked{% endifequal %}> Allow local users<br>
                         </label>
                     </div>
@@ -42,6 +49,28 @@
                     <div class="checkbox">
                         <label>
                             <input name="write_enable" id="write_enable" type="checkbox" {% ifequal configs.write_enable.value "YES" %}checked{% endifequal %}> Enable any form of FTP write command<br>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-lg-offset-4 col-lg-8">
+                    <div class="checkbox">
+                        <label>
+                            <input name="userlist_enable" id="userlist_enable" type="checkbox" {% ifequal configs.userlist_enable.value "YES" %}checked{% endifequal %}> Enabled load a list of usernames to allow ftp access<br>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-lg-offset-4 col-lg-8">
+                    <div class="checkbox">
+                        <label>
+                            <input name="userlist_deny" id="userlist_deny" type="checkbox" {% ifequal configs.userlist_deny.value "YES" %}checked{% endifequal %}> Deny access for users in userlist_file<br>
+                        </label>
+                    </div>
+                </div>
+                <div class="">
+                    <label for="userlist_file" class="col-lg-4 control-label">User list file</label>
+                    <div class="col-lg-6">
+                        <input name="userlist_file" id="userlist_file" type="text" class="form-control" placeholder="{{ configs.userlist_file.value|default_if_none:configs.userlist_file.default }}"
+                               value="{{ configs.userlist_file.value|default_if_none:configs.userlist_file.default }}">
                     </div>
                 </div>
                 <div class="col-lg-offset-4 col-lg-8">
